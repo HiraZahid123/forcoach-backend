@@ -17,6 +17,152 @@ export type Database = {
   };
   public: {
     Tables: {
+      calendar_connections: {
+        Row: {
+          access_token: string | null;
+          access_token_expires_at: string | null;
+          calendar_id: string | null;
+          calendar_name: string | null;
+          created_at: string;
+          google_account_email: string | null;
+          id: string;
+          last_synced_at: string | null;
+          provider: string;
+          refresh_token: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          access_token?: string | null;
+          access_token_expires_at?: string | null;
+          calendar_id?: string | null;
+          calendar_name?: string | null;
+          created_at?: string;
+          google_account_email?: string | null;
+          id?: string;
+          last_synced_at?: string | null;
+          provider?: string;
+          refresh_token: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          access_token?: string | null;
+          access_token_expires_at?: string | null;
+          calendar_id?: string | null;
+          calendar_name?: string | null;
+          created_at?: string;
+          google_account_email?: string | null;
+          id?: string;
+          last_synced_at?: string | null;
+          provider?: string;
+          refresh_token?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      events: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          end_time: string;
+          external_id: string | null;
+          id: string;
+          location: string | null;
+          notes: string | null;
+          source: string;
+          start_time: string;
+          status: string;
+          studio_id: string | null;
+          title: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          end_time: string;
+          external_id?: string | null;
+          id?: string;
+          location?: string | null;
+          notes?: string | null;
+          source: string;
+          start_time: string;
+          status?: string;
+          studio_id?: string | null;
+          title: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          end_time?: string;
+          external_id?: string | null;
+          id?: string;
+          location?: string | null;
+          notes?: string | null;
+          source?: string;
+          start_time?: string;
+          status?: string;
+          studio_id?: string | null;
+          title?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'events_studio_id_fkey';
+            columns: ['studio_id'];
+            isOneToOne: false;
+            referencedRelation: 'studios';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      import_activity: {
+        Row: {
+          error_message: string | null;
+          finished_at: string | null;
+          id: string;
+          records_created: number;
+          records_processed: number;
+          records_skipped: number;
+          records_updated: number;
+          source: string;
+          started_at: string;
+          status: string;
+          user_id: string;
+        };
+        Insert: {
+          error_message?: string | null;
+          finished_at?: string | null;
+          id?: string;
+          records_created?: number;
+          records_processed?: number;
+          records_skipped?: number;
+          records_updated?: number;
+          source: string;
+          started_at?: string;
+          status?: string;
+          user_id: string;
+        };
+        Update: {
+          error_message?: string | null;
+          finished_at?: string | null;
+          id?: string;
+          records_created?: number;
+          records_processed?: number;
+          records_skipped?: number;
+          records_updated?: number;
+          source?: string;
+          started_at?: string;
+          status?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       studios: {
         Row: {
           address: string | null;

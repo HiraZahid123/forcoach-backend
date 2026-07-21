@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { SupabaseModule } from './supabase/supabase.module';
 import { AuthModule } from './auth/auth.module';
 import { StudiosModule } from './studios/studios.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { StudiosModule } from './studios/studios.module';
     SupabaseModule,
     AuthModule,
     StudiosModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -14,6 +14,7 @@ import type { AuthenticatedRequest } from '../auth/supabase-auth.guard';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { ImportEventsDto } from './dto/import-events.dto';
 
 @Controller('events')
 @UseGuards(SupabaseAuthGuard)
@@ -23,6 +24,14 @@ export class EventsController {
   @Get()
   findAll(@Req() request: AuthenticatedRequest) {
     return this.eventsService.findAll(request.user.id);
+  }
+
+  @Post('import')
+  importCsv(
+    @Req() request: AuthenticatedRequest,
+    @Body() dto: ImportEventsDto,
+  ) {
+    return this.eventsService.importCsv(request.user.id, dto);
   }
 
   @Post()

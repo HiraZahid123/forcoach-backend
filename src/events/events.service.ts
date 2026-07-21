@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { ImportEventsDto } from './dto/import-events.dto';
 import type {
   TablesInsert,
   TablesUpdate,
@@ -9,6 +10,12 @@ import type {
 
 type EventInsert = TablesInsert<'events'>;
 type EventUpdate = TablesUpdate<'events'>;
+type ImportActivityInsert = TablesInsert<'import_activity'>;
+type ImportActivityUpdate = TablesUpdate<'import_activity'>;
+
+function dedupeKey(row: { title: string; startTime: string; endTime: string }) {
+  return `${row.title.trim().toLowerCase()}|${new Date(row.startTime).toISOString()}|${new Date(row.endTime).toISOString()}`;
+}
 
 function toInsertRow(dto: CreateEventDto, userId: string): EventInsert {
   return {
@@ -97,5 +104,112 @@ export class EventsService {
     if (error) throw error;
     if (!data) throw new NotFoundException('Event not found');
     return { success: true };
+  }
+
+  async importCsv(userId: string, dto: ImportEventsDto) {
+    const client = this.supabaseService.getClient();
+
+    const activityInsert: ImportActivityInsert = {
+      user_id: userId,
+      source: dto.source,
+      status: 'running',
+      records_processed: dto.rows.length,
+    };
+    const { data: activity, error: activityError } = await client
+      .from('import_activity')
+      .insert(activityInsert)
+      .select()
+      .single();
+    if (activityError) throw activityError;
+
+    const startTimes = dto.rows.map((row) => new Date(row.startTime).getTime());
+    const minStart = new Date(Math.min(...startTimes)).toISOString();
+    const maxStart = new Date(Math.max(...startTimes)).toISOString();
+
+    const { data: existing, error: existingError } = await client
+      .from('events')
+      .select('title, start_time, end_time')
+      .eq('user_id', userId)
+      .eq('source', dto.source)
+      .gte('start_time', minStart)
+      .lte('start_time', maxStart);
+    if (existingError) throw existingError;
+
+    const existingKeys = new Set(
+      (existing ?? []).map((row) =>
+        dedupeKey({
+          title: row.title,
+          startTime: row.start_time,
+          endTime: row.end_time,
+        }),
+      ),
+    );
+
+    const seen = new Set<string>();
+    const toInsert: EventInsert[] = [];
+    let skipped = 0;
+
+    for (const row of dto.rows) {
+      const key = dedupeKey(row);
+      if (existingKeys.has(key) || seen.has(key)) {
+        skipped += 1;
+        continue;
+      }
+      seen.add(key);
+      toInsert.push({
+        user_id: userId,
+        title: row.title,
+        start_time: row.startTime,
+        end_time: row.endTime,
+        studio_id: row.studioId,
+        notes: row.notes,
+        source: dto.source,
+        status: row.studioId ? 'assigned' : 'unassigned',
+      });
+    }
+
+    let created: EventInsert[] = [];
+    if (toInsert.length > 0) {
+      const { data, error } = await client
+        .from('events')
+        .insert(toInsert)
+        .select();
+      if (error) {
+        const failureUpdate: ImportActivityUpdate = {
+          status: 'failed',
+          error_message: error.message,
+          finished_at: new Date().toISOString(),
+          records_created: 0,
+          records_skipped: skipped,
+        };
+        await client
+          .from('import_activity')
+          .update(failureUpdate)
+          .eq('id', activity.id);
+        throw error;
+      }
+      created = data ?? [];
+    }
+
+    const finalUpdate: ImportActivityUpdate = {
+      status: 'success',
+      records_created: created.length,
+      records_updated: 0,
+      records_skipped: skipped,
+      finished_at: new Date().toISOString(),
+    };
+    const { data: finishedActivity, error: finishError } = await client
+      .from('import_activity')
+      .update(finalUpdate)
+      .eq('id', activity.id)
+      .select()
+      .single();
+    if (finishError) throw finishError;
+
+    return {
+      activity: finishedActivity,
+      created: created.length,
+      skipped,
+    };
   }
 }

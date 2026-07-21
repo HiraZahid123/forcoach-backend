@@ -6,6 +6,7 @@ import { SupabaseModule } from './supabase/supabase.module';
 import { AuthModule } from './auth/auth.module';
 import { StudiosModule } from './studios/studios.module';
 import { EventsModule } from './events/events.module';
+import { GoogleCalendarModule } from './google-calendar/google-calendar.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { EventsModule } from './events/events.module';
     AuthModule,
     StudiosModule,
     EventsModule,
+    GoogleCalendarModule,
   ],
   controllers: [AppController],
   providers: [AppService],

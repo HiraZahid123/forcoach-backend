@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  ValidateIf,
 } from 'class-validator';
 
 export class CreateEventDto {
@@ -31,8 +32,9 @@ export class CreateEventDto {
   source?: 'google_calendar' | 'csv' | 'manual';
 
   @IsOptional()
+  @ValidateIf((o: CreateEventDto) => o.studioId !== null)
   @IsUUID()
-  studioId?: string;
+  studioId?: string | null;
 
   @IsOptional()
   @IsIn(['assigned', 'unassigned', 'excluded'])

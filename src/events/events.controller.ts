@@ -34,6 +34,11 @@ export class EventsController {
     return this.eventsService.importCsv(request.user.id, dto);
   }
 
+  @Get('import-activity')
+  listImportActivity(@Req() request: AuthenticatedRequest) {
+    return this.eventsService.listImportActivity(request.user.id);
+  }
+
   @Post()
   create(@Req() request: AuthenticatedRequest, @Body() dto: CreateEventDto) {
     return this.eventsService.create(request.user.id, dto);

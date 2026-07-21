@@ -26,7 +26,7 @@ function toInsertRow(dto: CreateEventDto, userId: string): EventInsert {
     start_time: dto.startTime,
     end_time: dto.endTime,
     source: dto.source ?? 'manual',
-    studio_id: dto.studioId,
+    studio_id: dto.studioId ?? null,
     status: dto.status ?? 'unassigned',
     external_id: dto.externalId,
     notes: dto.notes,
@@ -41,7 +41,7 @@ function toUpdateRow(dto: UpdateEventDto): EventUpdate {
   if (dto.startTime !== undefined) row.start_time = dto.startTime;
   if (dto.endTime !== undefined) row.end_time = dto.endTime;
   if (dto.source !== undefined) row.source = dto.source;
-  if (dto.studioId !== undefined) row.studio_id = dto.studioId;
+  if (dto.studioId !== undefined) row.studio_id = dto.studioId ?? null;
   if (dto.status !== undefined) row.status = dto.status;
   if (dto.externalId !== undefined) row.external_id = dto.externalId;
   if (dto.notes !== undefined) row.notes = dto.notes;
@@ -211,5 +211,18 @@ export class EventsService {
       created: created.length,
       skipped,
     };
+  }
+
+  async listImportActivity(userId: string) {
+    const { data, error } = await this.supabaseService
+      .getClient()
+      .from('import_activity')
+      .select('*')
+      .eq('user_id', userId)
+      .order('started_at', { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+    return data;
   }
 }

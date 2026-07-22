@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { StudiosModule } from './studios/studios.module';
 import { EventsModule } from './events/events.module';
 import { GoogleCalendarModule } from './google-calendar/google-calendar.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { GoogleCalendarModule } from './google-calendar/google-calendar.module';
     StudiosModule,
     EventsModule,
     GoogleCalendarModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

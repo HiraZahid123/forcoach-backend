@@ -120,6 +120,7 @@ export class GoogleCalendarService {
       calendarName: connection.calendar_name,
       googleAccountEmail: connection.google_account_email,
       lastSyncedAt: connection.last_synced_at,
+      defaultStudioId: connection.default_studio_id,
     };
   }
 
@@ -131,11 +132,15 @@ export class GoogleCalendarService {
     const calendar = google.calendar({ version: 'v3', auth });
     const { data } = await calendar.calendarList.list();
 
-    return (data.items ?? []).map((item) => ({
-      id: item.id,
-      name: item.summary,
-      primary: item.primary ?? false,
-    }));
+    return (data.items ?? [])
+      .filter(
+        (item) => !item.id?.endsWith('#holiday@group.v.calendar.google.com'),
+      )
+      .map((item) => ({
+        id: item.id,
+        name: item.summary,
+        primary: item.primary ?? false,
+      }));
   }
 
   async selectCalendar(userId: string, dto: SelectCalendarDto) {
@@ -148,6 +153,7 @@ export class GoogleCalendarService {
       google_account_email: dto.calendarId.includes('@')
         ? dto.calendarId
         : null,
+      default_studio_id: dto.defaultStudioId ?? null,
     };
     const { error } = await this.supabaseService
       .getClient()
@@ -254,7 +260,8 @@ export class GoogleCalendarService {
             user_id: userId,
             source: 'google_calendar',
             external_id: item.id!,
-            status: 'unassigned',
+            studio_id: connection.default_studio_id,
+            status: connection.default_studio_id ? 'assigned' : 'unassigned',
             ...fields,
           });
         }

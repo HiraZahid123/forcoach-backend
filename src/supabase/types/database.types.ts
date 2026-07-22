@@ -24,6 +24,7 @@ export type Database = {
           calendar_id: string | null;
           calendar_name: string | null;
           created_at: string;
+          default_studio_id: string | null;
           google_account_email: string | null;
           id: string;
           last_synced_at: string | null;
@@ -38,6 +39,7 @@ export type Database = {
           calendar_id?: string | null;
           calendar_name?: string | null;
           created_at?: string;
+          default_studio_id?: string | null;
           google_account_email?: string | null;
           id?: string;
           last_synced_at?: string | null;
@@ -52,6 +54,7 @@ export type Database = {
           calendar_id?: string | null;
           calendar_name?: string | null;
           created_at?: string;
+          default_studio_id?: string | null;
           google_account_email?: string | null;
           id?: string;
           last_synced_at?: string | null;
@@ -60,7 +63,15 @@ export type Database = {
           updated_at?: string;
           user_id?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'calendar_connections_default_studio_id_fkey';
+            columns: ['default_studio_id'];
+            isOneToOne: false;
+            referencedRelation: 'studios';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       events: {
         Row: {

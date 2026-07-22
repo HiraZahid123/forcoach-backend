@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class SelectCalendarDto {
   @IsString()
@@ -8,4 +8,8 @@ export class SelectCalendarDto {
   @IsOptional()
   @IsString()
   calendarName?: string;
+
+  @IsOptional()
+  @IsUUID()
+  defaultStudioId?: string;
 }

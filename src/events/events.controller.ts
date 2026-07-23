@@ -15,6 +15,7 @@ import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { ImportEventsDto } from './dto/import-events.dto';
+import { BulkDeleteEventsDto } from './dto/bulk-delete-events.dto';
 
 @Controller('events')
 @UseGuards(SupabaseAuthGuard)
@@ -56,5 +57,13 @@ export class EventsController {
   @Delete(':id')
   remove(@Req() request: AuthenticatedRequest, @Param('id') id: string) {
     return this.eventsService.remove(request.user.id, id);
+  }
+
+  @Post('bulk-delete')
+  bulkRemove(
+    @Req() request: AuthenticatedRequest,
+    @Body() dto: BulkDeleteEventsDto,
+  ) {
+    return this.eventsService.bulkRemove(request.user.id, dto.ids);
   }
 }

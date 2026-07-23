@@ -106,6 +106,19 @@ export class EventsService {
     return { success: true };
   }
 
+  async bulkRemove(userId: string, ids: string[]) {
+    const { data, error } = await this.supabaseService
+      .getClient()
+      .from('events')
+      .delete()
+      .in('id', ids)
+      .eq('user_id', userId)
+      .select('id');
+
+    if (error) throw error;
+    return { success: true, deleted: data.length };
+  }
+
   async importCsv(userId: string, dto: ImportEventsDto) {
     const client = this.supabaseService.getClient();
 

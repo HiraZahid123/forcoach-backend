@@ -14,12 +14,15 @@ export class NotificationsController {
   async newSignup(@Body() dto: NewSignupDto) {
     const adminEmail = this.config.get<string>(
       'ADMIN_NOTIFICATION_EMAIL',
-      'hassanjamal8735@gmail.com',
+      'contact@forcoach.io',
     );
     await this.mailService.send(
       adminEmail,
       'New FORCOACH signup',
-      `A new coach just registered: ${dto.email}\n\nIf Google Calendar is still in Testing mode, add this email as a test user in Google Cloud Console before they try to connect their calendar.`,
+      `A new coach just registered: ${dto.email}\n\n` +
+        `While Google Calendar access is in Testing mode, this person needs to be added as a test user before they can connect their calendar:\n` +
+        `https://console.cloud.google.com/auth/audience?project=for-503122&supportedpurview=project\n\n` +
+        `Add "${dto.email}" under Test users, then they're good to go.`,
     );
     return { success: true };
   }

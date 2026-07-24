@@ -79,6 +79,7 @@ export type Database = {
           description: string | null;
           end_time: string;
           external_id: string | null;
+          ics_feed_id: string | null;
           id: string;
           location: string | null;
           notes: string | null;
@@ -95,6 +96,7 @@ export type Database = {
           description?: string | null;
           end_time: string;
           external_id?: string | null;
+          ics_feed_id?: string | null;
           id?: string;
           location?: string | null;
           notes?: string | null;
@@ -111,6 +113,7 @@ export type Database = {
           description?: string | null;
           end_time?: string;
           external_id?: string | null;
+          ics_feed_id?: string | null;
           id?: string;
           location?: string | null;
           notes?: string | null;
@@ -124,8 +127,56 @@ export type Database = {
         };
         Relationships: [
           {
+            foreignKeyName: 'events_ics_feed_id_fkey';
+            columns: ['ics_feed_id'];
+            isOneToOne: false;
+            referencedRelation: 'ics_feeds';
+            referencedColumns: ['id'];
+          },
+          {
             foreignKeyName: 'events_studio_id_fkey';
             columns: ['studio_id'];
+            isOneToOne: false;
+            referencedRelation: 'studios';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      ics_feeds: {
+        Row: {
+          created_at: string;
+          default_studio_id: string | null;
+          id: string;
+          last_synced_at: string | null;
+          name: string;
+          updated_at: string;
+          url: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          default_studio_id?: string | null;
+          id?: string;
+          last_synced_at?: string | null;
+          name: string;
+          updated_at?: string;
+          url: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          default_studio_id?: string | null;
+          id?: string;
+          last_synced_at?: string | null;
+          name?: string;
+          updated_at?: string;
+          url?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'ics_feeds_default_studio_id_fkey';
+            columns: ['default_studio_id'];
             isOneToOne: false;
             referencedRelation: 'studios';
             referencedColumns: ['id'];

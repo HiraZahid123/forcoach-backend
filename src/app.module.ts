@@ -9,6 +9,7 @@ import { StudiosModule } from './studios/studios.module';
 import { EventsModule } from './events/events.module';
 import { GoogleCalendarModule } from './google-calendar/google-calendar.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { IcsFeedsModule } from './ics-feeds/ics-feeds.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     EventsModule,
     GoogleCalendarModule,
     NotificationsModule,
+    IcsFeedsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
